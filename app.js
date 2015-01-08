@@ -1,18 +1,13 @@
 var express = require('express'),
-	cons = require('consolidate'),
-	mongodb = require('mongodb'),
-	MongoClient = require('mongodb').MongoClient;
+	app = express();
 
-MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
-	if (err) throw err;
-
-	db.collection('coll').findOne({}, function(err, doc) {
-		if (err) throw err;
-
-		console.dir(doc);
-
-		db.close();
-	});
-
-	console.dir("Called findOne!");
+app.get('/', function(req, res) {
+	res.send("Hello, World!");
 });
+
+app.get('*', function(req, res) {
+	res.send("Page not found", 404);
+});
+
+app.listen(8080);
+console.log("Express server started on port 8080");
