@@ -1,31 +1,15 @@
-var express = require('express'),
-	app = express(),
-	cons = require('consolidate'),
-	MongoClient = require('mongodb').MongoClient,
-	Server = require('mongodb').Server;
+var MongoClient = require('mongodb').MongoClient;
 
-app.engine('html', cons.swig);
-app.set('view engine', 'html');
-app.set('views', __dirname + "/views");
-
-var monngoclient = new MongoClient(new Server('localhost', 27017, {'native_parser' : true }));
-
-var db = monngoclient.db('course');
-
-app.get('/', function(req, res) {
-
-	db.collection('hello_mongo_express').findOne({}, function(err, doc) {
-		res.render("hello", doc);
-	});
-});
-
-app.get('*', function(req, res) {
-	res.send("Page not found", 404);
-});
-
-monngoclient.open(function (err, monngoclient) {
+MongoClient.connect('mongodb://localhost:27017/course', function(err, db) {
 	if (err) throw err;
-	
-	app.listen(8080);
-	console.log("Express server started on port 8080");	
+
+	var query = {'grade':100};
+
+	db.collection('grades').findOne(query, function(err, doc) {
+		if (err) throw err;
+
+		console.dir(doc);
+
+		db.close();
+	});
 });
