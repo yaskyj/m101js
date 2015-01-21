@@ -22,23 +22,23 @@ function checkGrade (err, doc) {
 		cursorExhausted = true;
 	}
 	else if (currentName == null || currentName != doc.name){
-		var lowest = 100;
+		var lowest = 100,
+			index;
 	
 		for (var i = 0; i < doc.scores.length; i++) {	
 			if (doc.scores[i]['type'] === 'homework') {
 				if (doc.scores[i]['score'] < lowest) {
-					lowest =  doc.scores[i]['score'];
+					lowest = doc.scores[i]['score'];
+					index = i;
 				};
 			};
 		}
-		//console.log(doc['_id'])
 		//db.collection('students').findOne({'_id':doc['_id']}, function(err, result) {
-		db.collection('students').update({'_id':doc['_id']}, {$unset:{'scores.score':lowest}}, function(err, result) {
+		db.collection('students').update({'_id':doc['_id']}, {$pull:{scores:{score:lowest}}}, function(err, result) {
 			count--;
 			if (err) {
 				console.log(err);
 			}
-			console.log(result);			
 			if (cursorExhausted && count == 0) {
 			 return db.close();
 			}
@@ -46,20 +46,4 @@ function checkGrade (err, doc) {
 		currentName = doc.name;
 		count++;
 	}
-		
-		// db.collection('students').findOne({'_id':doc['_id']}, function(err, result) {
-		
-		// 	if (err) throw err;
-		// 	console.log(result);
-		// 	// return db.close();
-		// });
-		// db.collection('students').find(query, projection).each(function(err, doc) {
-		// 	if (err) throw err;
-		
-		// 	if (doc==null) {
-		// 		return db.close();
-		// 	};
-		
-		// 	console.dir(doc.title);
-		// });
 }
