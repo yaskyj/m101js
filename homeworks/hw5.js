@@ -47,22 +47,20 @@ db.grades.aggregate([
 
 db.zips.aggregate([
   {
-    $group: {
-      _id: {state:"$state", city:"$city"},
-      pop: {$sum:"$pop"}
+    $project: {
+      first_char: {$substr: ["$city",0,1]},
+      pop:1
     }
   },
-  { 
-    $match:{
-      $and: [
-        {pop:{$gte:25000}},{$or:[{"_id.state":"CA"}, {"_id.state":"NY"}]}
-      ]
-    }
+  {
+    $match: {
+      first_char:{$regex:/[0-9]/}
+    } 
   },
   {
     $group: {
       _id: null,
-      avg_pop: {$avg:"$pop"}
+      sum: {$sum:"$pop"}
     }  
   }
 ]);
